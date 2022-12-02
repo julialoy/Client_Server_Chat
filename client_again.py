@@ -14,6 +14,7 @@ class Client:
         self._instrux = "Type a message.\nType /f when you are finished sending messages are ready to wait for a response."
         self._quit_msg = "Type /q to quit"
         self._is_connected = False
+        self._hangman_started = False
 
     def _get_messages(self, sckt):
         if not self._is_connected:
@@ -21,16 +22,26 @@ class Client:
 
         server_msg = sckt.recv(1024).decode()
         while server_msg[-2:] != '/f':
-            print(f"SERVER: {server_msg}")
+            if not self._hangman_started:
+                print(f"SERVER: {server_msg}")
+            elif len(server_msg) > 0:
+                print(server_msg)
+
             server_msg = sckt.recv(1024).decode()
             if server_msg[-2:] == '/f' and len(server_msg) > 2:
                 print(f"SERVER: {server_msg[:-2]}")
+            elif server_msg == '/hangman':
+                self._hangman_started = True
+
 
     def _send_message(self, sckt):
         if not self._is_connected:
             return
 
-        while True:
+        client_msg = input('> ')
+        sckt.send(client_msg.encode())
+
+        while not self._hangman_started:
             client_msg = input('> ')
             sckt.send(client_msg.encode())
             if client_msg == "/q":
