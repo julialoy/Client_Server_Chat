@@ -37,7 +37,8 @@ class HangmanGame:
         "swimming",
         "blanket"
     ]
-    instructions = "A random word will be selected by the game. The length" \
+    instructions = "******************* HANGMAN *******************************\n" \
+                   "A random word will be selected by the game. The length" \
                     " will be indicated by blanks. You will take turns guessing," \
                     " only guessing when prompted. If you and your partner correctly " \
                     "guess the secret word before the drawing of the Hanged Man is complete," \
@@ -74,6 +75,8 @@ class HangmanGame:
 
         self._guessed_letters.append(player_guess.lower())
 
+        return player_guess
+
     def get_game_progress(self):
         return f"Word to guess: {' '.join(self._progress)}"
 
@@ -94,6 +97,10 @@ class HangmanGame:
             for i in range(len(self._secret_word)):
                 if self._secret_word[i] == player_guess.lower():
                     self._progress[i] = self._secret_word[i]
+            if ''.join(self._progress) == self._secret_word:
+                self._is_game_over = True
+                return f"Congratulations! You won!"
+
             return "That is a correct guess!"
 
     def get_player_turn(self):
